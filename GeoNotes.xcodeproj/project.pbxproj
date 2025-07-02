@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		91BA80742E140D11006B71C0 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 91BA80732E140D11006B71C0 /* ComposableArchitecture */; };
+		91BA80F22E151AB5006B71C0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 91BA80F12E151AB5006B71C0 /* FirebaseAnalytics */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		91BA80522E13FAAB006B71C0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +34,22 @@
 		91BA805B2E13FAAB006B71C0 /* GeoNotesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GeoNotesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		91BA830C2E152F05006B71C0 /* Exceptions for "GeoNotes" folder in "GeoNotes" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 91BA80402E13FAA8006B71C0 /* GeoNotes */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		91BA80432E13FAA8006B71C0 /* GeoNotes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				91BA830C2E152F05006B71C0 /* Exceptions for "GeoNotes" folder in "GeoNotes" target */,
+			);
 			path = GeoNotes;
 			sourceTree = "<group>";
 		};
@@ -52,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91BA80F22E151AB5006B71C0 /* FirebaseAnalytics in Frameworks */,
+				91BA80742E140D11006B71C0 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +132,8 @@
 			);
 			name = GeoNotes;
 			packageProductDependencies = (
+				91BA80732E140D11006B71C0 /* ComposableArchitecture */,
+				91BA80F12E151AB5006B71C0 /* FirebaseAnalytics */,
 			);
 			productName = GeoNotes;
 			productReference = 91BA80412E13FAA8006B71C0 /* GeoNotes.app */;
@@ -195,6 +217,10 @@
 			);
 			mainGroup = 91BA80382E13FAA8006B71C0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				91BA80722E140D11006B71C0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				91BA80F02E151AB5006B71C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 91BA80422E13FAA8006B71C0 /* Products */;
 			projectDirPath = "";
@@ -399,6 +425,7 @@
 				DEVELOPMENT_TEAM = A83DTTZX83;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GeoNotes/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GeoNotes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -433,6 +460,7 @@
 				DEVELOPMENT_TEAM = A83DTTZX83;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GeoNotes/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = GeoNotes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -568,6 +596,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		91BA80722E140D11006B71C0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.20.2;
+			};
+		};
+		91BA80F02E151AB5006B71C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		91BA80732E140D11006B71C0 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 91BA80722E140D11006B71C0 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		91BA80F12E151AB5006B71C0 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 91BA80F02E151AB5006B71C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 91BA80392E13FAA8006B71C0 /* Project object */;
 }
