@@ -14,17 +14,11 @@ struct AppView: View {
     var body: some View {
         ZStack {
             if showTabBar {
-                ZStack {
-                    Color.red.ignoresSafeArea()
-                    Text("Tabbar")
-                }
-                .transition(.move(edge: .trailing))
+                TabBarView()
+                    .transition(.move(edge: .trailing))
             } else {
-                ZStack {
-                    Color.blue.ignoresSafeArea()
-                    Text("Login Screen")
-                }
-                .transition(.move(edge: .leading))
+                LoginView()
+                    .transition(.move(edge: .leading))
             }
         }
         .animation(.smooth, value: showTabBar)
