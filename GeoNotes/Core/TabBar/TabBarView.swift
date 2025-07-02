@@ -6,11 +6,15 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct TabBarView: View {
+    
+    let notesStore: StoreOf<NotesFeature>
+    
     var body: some View {
         TabView {
-            NotesView()
+            NotesView(store: notesStore)
                 .tabItem {
                     Label("Notes", systemImage: "note.text")
                 }
@@ -24,5 +28,12 @@ struct TabBarView: View {
 }
 
 #Preview {
-    TabBarView()
+    TabBarView(
+        notesStore: Store(
+            initialState: NotesFeature.State(),
+            reducer: {
+                NotesFeature()
+            }
+        )
+    )
 }

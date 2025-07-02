@@ -6,32 +6,48 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct AppView: View {
     
-    @AppStorage("showTabbarView") var showTabBar: Bool = false
+    let store: StoreOf<AppStateFeature>
     
     var body: some View {
         ZStack {
-            if showTabBar {
-                TabBarView()
-                    .transition(.move(edge: .trailing))
-            } else {
-                LoginView()
+            WithViewStore(self.store, observe: \.showTabBar) { viewStore in
+                if viewStore.state {
+                    TabBarView(notesStore: store.scope(state: \.logout, action: \.logout))
+                        .transition(.move(edge: .trailing))
+                } else {
+                    SignupView(
+                        store: store.scope(state: \.signup, action: \.signup)
+                    )
                     .transition(.move(edge: .leading))
+                }
             }
         }
-        .animation(.smooth, value: showTabBar)
-        .onTapGesture {
-            showTabBar.toggle()
-        }
+        .animation(.smooth, value: store.showTabBar)
     }
 }
 
 #Preview("AppView - Tabbar") {
-    AppView(showTabBar: true)
+    AppView(
+        store: Store(
+            initialState: AppStateFeature.State(showTabBar: true),
+            reducer: {
+                AppStateFeature()
+            }
+        )
+    )
 }
 
 #Preview("AppView - Login") {
-    AppView(showTabBar: false)
+    AppView(
+        store: Store(
+            initialState: AppStateFeature.State(showTabBar: false),
+            reducer: {
+                AppStateFeature()
+            }
+        )
+    )
 }

@@ -14,15 +14,15 @@ struct GeoNotesApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
-//    static let store = Store(
-//        initialState: CounterFeature.State()) {
-//            CounterFeature()
-//                ._printChanges()
-//        }
+    static let store = Store(
+        initialState: AppStateFeature.State()) {
+            AppStateFeature()
+                ._printChanges()
+        }
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppView(store: GeoNotesApp.store)
         }
     }
 }

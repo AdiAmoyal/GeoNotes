@@ -6,10 +6,37 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
+
+@Reducer
+struct NotesFeature {
+    
+    @ObservableState
+    struct State {
+        var userName: String = "Adi"
+    }
+    
+    enum Action {
+        case logoutButtonPressed
+        case logoutSucceeded
+    }
+    
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .logoutButtonPressed:
+                // TODO: Add logic to signout
+                return .send(.logoutSucceeded)
+            case .logoutSucceeded:
+                return .none
+            }
+        }
+    }
+}
 
 struct NotesView: View {
     
-    @State var userName: String = "Adi"
+    let store: StoreOf<NotesFeature>
     
     var body: some View {
         NavigationStack {
@@ -27,14 +54,14 @@ struct NotesView: View {
     
     private var header: some View {
         HStack {
-            Text("Welcome, \(userName)!")
+            Text("Welcome, \(store.userName)!")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .foregroundStyle(Color.text)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Button {
-                logoutButtonPressed()
+                store.send(.logoutButtonPressed)
             } label: {
                 Image(systemName: "rectangle.portrait.and.arrow.forward")
                     .font(.headline)
@@ -42,12 +69,15 @@ struct NotesView: View {
         }
         .padding(24)
     }
-    
-    private func logoutButtonPressed() {
-        
-    }
 }
 
 #Preview {
-    NotesView()
+    NotesView(
+        store: Store(
+            initialState: NotesFeature.State(),
+            reducer: {
+                NotesFeature()
+            }
+        )
+    )
 }
