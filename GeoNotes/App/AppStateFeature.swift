@@ -33,7 +33,10 @@ struct AppStateFeature {
         case signup(SignupFeature.Action)
         case logout(NotesFeature.Action)
         case signin(SigninFeature.Action)
+        case onAppear
     }
+    
+    @Dependency(\.firebaseAuthService) var authService
     
     var body: some ReducerOf<Self> {
         Scope(state: \.signup, action: \.signup) {
@@ -68,7 +71,16 @@ struct AppStateFeature {
                 return .none
             case .signin:
                 return .none
+            case .onAppear:
+                if let user = authService.currentUser() {
+                    print("User is already signed in: \(user.uid)")
+                    state.showTabBar = true
+                } else {
+                    state.showTabBar = false
+                }
+                return .none
             }
+            
         }
     }
 }

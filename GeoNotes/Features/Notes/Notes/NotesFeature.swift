@@ -26,7 +26,10 @@ struct NotesFeature {
         case addNewNoteButtonPressed
         case addNewNoteSheet(PresentationAction<AddNewNoteFeature.Action>)
         case onDeleteNotePressed(IndexSet)
+        case onAppear
     }
+    
+    @Dependency(\.firebaseAuthService) var authService
     
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -35,7 +38,11 @@ struct NotesFeature {
             case .binding:
                 return .none
             case .logoutButtonPressed:
-                // TODO: Add logic to signout
+                do {
+                    try authService.signOut()
+                } catch {
+                    print("Sign out failed: \(error)")
+                }
                 return .send(.logoutSucceeded)
             case .logoutSucceeded:
                 return .none
@@ -49,6 +56,14 @@ struct NotesFeature {
             case .onDeleteNotePressed(let indexSet):
                 guard let index = indexSet.first else { return .none }
                 state.notes.remove(at: index)
+                return .none
+            case .onAppear:
+//                if let user = authService.currentUser() {
+//                    print("User is already signed in: \(user.uid)")
+//                    state.showTabBar = true
+//                } else {
+//                    state.showTabBar = false
+//                }
                 return .none
             }
         }

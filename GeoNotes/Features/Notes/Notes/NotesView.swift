@@ -36,6 +36,9 @@ struct NotesView: View {
                     }
                 }
             }
+            .onAppear {
+                
+            }
         }
     }
     
