@@ -16,7 +16,6 @@ struct NotesFeature {
         var userName: String = "Adi"
         var notes: [NoteModel] = NoteModel.mocks
         var isLoading: Bool = false
-        //        var showAddNewNoteSheet: Bool = false
         @Presents var addNewNoteSheet: AddNewNoteFeature.State?
     }
     

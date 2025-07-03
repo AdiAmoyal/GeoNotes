@@ -14,21 +14,22 @@ struct MapFeature {
     
     @ObservableState
     struct State {
-        var mapRegion: EquatableCoordinateRegion = EquatableCoordinateRegion(region: MKCoordinateRegion(
-            center: CLLocationCoordinate2D(
-                latitude: 37.7749,
-                longitude: -122.4194
-            ),
-            span: MKCoordinateSpan(
-                latitudeDelta: 0.1,
-                longitudeDelta: 0.1
-            )
-        ))
+        var notes: [NoteModel] = []
+        var mapLocation: NoteModel?
+        var mapRegion: EquatableCoordinateRegion = EquatableCoordinateRegion(region: MKCoordinateRegion())
+        var mapSpan: MKCoordinateSpan = MKCoordinateSpan(
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1
+        )
+        var isLoading: Bool = false
     }
     
     enum Action: BindableAction {
         case binding(BindingAction<State>)
-        
+        case onAppear
+        case didMapLocationChanged(NoteModel)
+//        case updateMapRegion(CLLocationCoordinate2D)
+        case onNextButtonPressed(NoteModel)
     }
     
     var body: some ReducerOf<Self> {
@@ -37,6 +38,33 @@ struct MapFeature {
             switch action {
             case .binding:
                 return .none
+            case .onAppear:
+                state.isLoading = true
+                state.notes = NoteModel.mocks
+                state.mapLocation = state.notes.first!
+                state.isLoading = false
+                guard let note = state.mapLocation else { return .none }
+                return .send(.didMapLocationChanged(note))
+            case .didMapLocationChanged(let note):
+                state.mapLocation = note
+                guard let note = state.mapLocation, let coordinates = note.location else { return .none }
+                state.mapRegion = EquatableCoordinateRegion(region: MKCoordinateRegion(center: coordinates, span: state.mapSpan))
+                return .none
+            case .onNextButtonPressed(let note):
+                guard let currentIndex = state.notes.firstIndex(where: { $0 == state.mapLocation}) else {
+                    print("Could not find current index in locations array! Should never happen.")
+                    return .none
+                }
+                let nextIndex = currentIndex + 1
+                
+                guard state.notes.indices.contains(nextIndex) else {
+                    guard let firstNote = state.notes.first else { return .none }
+                    return .send(.didMapLocationChanged(firstNote))
+                }
+                
+                // Next index is valid
+                let nextNote = state.notes[nextIndex]
+                return .send(.didMapLocationChanged(nextNote))
             }
         }
     }
@@ -49,10 +77,49 @@ struct MapView: View {
     })
     
     var body: some View {
-        NavigationStack {
-            ZStack {
+        ZStack {
+            if store.isLoading {
+                ProgressView()
+            } else if !store.notes.isEmpty {
                 Map(coordinateRegion: $store.mapRegion.region)
                     .ignoresSafeArea(edges: .top)
+            } else {
+                Text("No notes yet.")
+                    .foregroundColor(.secondary)
+            }
+            
+            if !store.notes.isEmpty {
+                VStack {
+                    Spacer()
+                    notesPreviewSection
+                }
+            }
+        }
+        .animation(.easeInOut, value: store.mapLocation)
+        .animation(.easeInOut, value: store.mapRegion)
+        .onAppear {
+            store.send(.onAppear)
+        }
+    }
+    
+    private var notesPreviewSection: some View {
+        ZStack {
+            ForEach(store.notes) { note in
+                if let mapLocation = store.mapLocation {
+                    if mapLocation == note {
+                        NotePreviewView(note: note) {
+                            store.send(.onNextButtonPressed(note))
+                        }
+                        .shadow(
+                            color: Color.black.opacity(0.17),
+                            radius: 8)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing),
+                            removal: .move(edge: .leading)))
+                    }
+                }
             }
         }
     }

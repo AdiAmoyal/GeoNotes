@@ -13,13 +13,13 @@ struct NoteModel: Identifiable, Equatable {
     let title: String
     let body: String
     let creationDate: Date
-    let location: CLLocationCoordinate2D
+    let location: CLLocationCoordinate2D?
     
     init(
         title: String,
         body: String,
         creationDate: Date,
-        location: CLLocationCoordinate2D
+        location: CLLocationCoordinate2D?
     ) {
         self.title = title
         self.body = body
