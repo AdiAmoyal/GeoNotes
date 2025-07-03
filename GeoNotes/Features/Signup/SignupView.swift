@@ -17,15 +17,35 @@ struct SignupView: View {
         ZStack {
             Color.background.ignoresSafeArea()
             
-            VStack {
+            VStack(spacing: 16) {
                 iconSection
                 
                 signupForm
                     .frame(maxHeight: .infinity)
                 
                 signupButton
+                
+                HStack(spacing: 1) {
+                    Text("Already have an account? ")
+                        .foregroundStyle(Color.text)
+                    
+                    Button(action: {
+                        store.send(.signinButtonPressed)
+                    }, label: {
+                        Text("SignIn")
+                            .foregroundStyle(Color.accent)
+                    })
+                }
+                .font(.headline)
             }
             .padding(22)
+            .sheet(
+                item: $store.scope(state: \.signInSheet, action: \.signInSheet),
+                content: { signInStore in
+                    SignInView(store: signInStore)
+                        .presentationDetents([.medium])
+                }
+            )
         }
     }
     

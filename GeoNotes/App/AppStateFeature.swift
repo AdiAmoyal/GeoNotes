@@ -21,6 +21,7 @@ struct AppStateFeature {
         
         var signup = SignupFeature.State()
         var logout = NotesFeature.State()
+        var signin = SigninFeature.State()
         
         init(showTabBar: Bool = UserDefaults.showTabBarView) {
             self.showTabBar = showTabBar
@@ -31,6 +32,7 @@ struct AppStateFeature {
         case updateViewState(Bool)
         case signup(SignupFeature.Action)
         case logout(NotesFeature.Action)
+        case signin(SigninFeature.Action)
     }
     
     var body: some ReducerOf<Self> {
@@ -40,6 +42,10 @@ struct AppStateFeature {
         
         Scope(state: \.logout, action: \.logout) {
             NotesFeature()
+        }
+        
+        Scope(state: \.signin, action: \.signin) {
+            SigninFeature()
         }
         
         Reduce { state, action in
@@ -53,9 +59,14 @@ struct AppStateFeature {
             case .logout(.logoutSucceeded):
                 state.showTabBar = false
                 return .none
+            case .signin(.signInSucceeded):
+                state.showTabBar = true
+                return .none
             case .signup:
                 return .none
             case .logout:
+                return .none
+            case .signin:
                 return .none
             }
         }

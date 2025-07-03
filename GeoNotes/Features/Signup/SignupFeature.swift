@@ -19,6 +19,7 @@ struct SignupFeature {
         var showPassword: Bool = false
         var focusField: Field? = nil
         var isLoading: Bool = false
+        @Presents var signInSheet: SigninFeature.State?
     }
     
     enum Field: Hashable {
@@ -31,7 +32,12 @@ struct SignupFeature {
         case focusChanged(Field?)
         case signupButtonPressed
         case signupSucceeded
+        case resetVariables
+        case signinButtonPressed
+        case signInSheet(PresentationAction<SigninFeature.Action>)
     }
+    
+    @Dependency(\.firebaseAuthService) var auth
     
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -46,11 +52,37 @@ struct SignupFeature {
                 state.focusField = field
                 return .none
             case .signupButtonPressed:
-                // TODO: Add logic to signup
-                return .send(.signupSucceeded)
+                state.isLoading = true
+                return .run { [email = state.email, password = state.password] send in
+                    do {
+                        guard !email.isEmpty, !password.isEmpty else { return }
+                        let user = try await auth.signUp(email, password)
+                        print("User signed up: \(user.uid)")
+                        await send(.signupSucceeded)
+                        await send(.resetVariables)
+                    } catch {
+                        print("Signup error: \(error.localizedDescription)")
+                    }
+                }
             case .signupSucceeded:
+                state.isLoading = false
+                return .none
+            case .resetVariables:
+                state.email = ""
+                state.password = ""
+                return .none
+            case .signinButtonPressed:
+                state.signInSheet = SigninFeature.State()
+                return .none
+            case .signInSheet(.presented(.delegate(.signInSucceeded))):
+                state.signInSheet = nil
+                return .send(.signupSucceeded)
+            case .signInSheet:
                 return .none
             }
+        }
+        .ifLet(\.$signInSheet, action: \.signInSheet) {
+            SigninFeature()
         }
     }
 }
