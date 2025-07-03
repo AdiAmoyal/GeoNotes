@@ -10,10 +10,11 @@ import FirebaseAuth
 struct AuthDataResultModel {
     let uid: String
     let email: String?
-    
+    let creationDate: Date?
     
     init(user: User) {
         self.uid = user.uid
         self.email = user.email
+        self.creationDate = user.metadata.creationDate
     }
 }

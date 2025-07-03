@@ -38,6 +38,7 @@ struct SignupFeature {
     }
     
     @Dependency(\.firebaseAuthService) var auth
+    @Dependency(\.firebaseUserService) var userService
     
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -53,11 +54,20 @@ struct SignupFeature {
                 return .none
             case .signupButtonPressed:
                 state.isLoading = true
-                return .run { [email = state.email, password = state.password] send in
+                return .run { [email = state.email, password = state.password, name = state.name] send in
                     do {
-                        guard !email.isEmpty, !password.isEmpty else { return }
-                        let user = try await auth.signUp(email, password)
-                        print("User signed up: \(user.uid)")
+                        guard !email.isEmpty,
+                              !password.isEmpty else { return }
+                        let authUser = try await auth.signUp(email, password)
+                        let user = UserModel(
+                            userId: authUser.uid,
+                            dateCreated: authUser.creationDate ?? .now,
+                            email: email,
+                            name: name,
+                            notes: []
+                        )
+                        try await userService.saveUser(user)
+                        print("User signed up: \(authUser.uid)")
                         await send(.signupSucceeded)
                         await send(.resetVariables)
                     } catch {

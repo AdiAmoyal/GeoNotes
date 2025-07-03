@@ -11,6 +11,7 @@
 		91BA80F22E151AB5006B71C0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 91BA80F12E151AB5006B71C0 /* FirebaseAnalytics */; };
 		91BA8B8C2E16F568006B71C0 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 91BA8B8B2E16F568006B71C0 /* FirebaseAuth */; };
 		91BA8B8E2E16F569006B71C0 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 91BA8B8D2E16F569006B71C0 /* FirebaseCore */; };
+		A633D1D72E173C310075C0AC /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A633D1D62E173C310075C0AC /* FirebaseFirestore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,7 @@
 				91BA80F22E151AB5006B71C0 /* FirebaseAnalytics in Frameworks */,
 				91BA8B8C2E16F568006B71C0 /* FirebaseAuth in Frameworks */,
 				91BA8B8E2E16F569006B71C0 /* FirebaseCore in Frameworks */,
+				A633D1D72E173C310075C0AC /* FirebaseFirestore in Frameworks */,
 				91BA80742E140D11006B71C0 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -102,6 +104,7 @@
 				91BA80432E13FAA8006B71C0 /* GeoNotes */,
 				91BA80542E13FAAB006B71C0 /* GeoNotesTests */,
 				91BA805E2E13FAAB006B71C0 /* GeoNotesUITests */,
+				A633D1D52E173C310075C0AC /* Frameworks */,
 				91BA80422E13FAA8006B71C0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -114,6 +117,13 @@
 				91BA805B2E13FAAB006B71C0 /* GeoNotesUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A633D1D52E173C310075C0AC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,6 +150,7 @@
 				91BA80F12E151AB5006B71C0 /* FirebaseAnalytics */,
 				91BA8B8B2E16F568006B71C0 /* FirebaseAuth */,
 				91BA8B8D2E16F569006B71C0 /* FirebaseCore */,
+				A633D1D62E173C310075C0AC /* FirebaseFirestore */,
 			);
 			productName = GeoNotes;
 			productReference = 91BA80412E13FAA8006B71C0 /* GeoNotes.app */;
@@ -644,6 +655,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 91BA80F02E151AB5006B71C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		A633D1D62E173C310075C0AC /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 91BA80F02E151AB5006B71C0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

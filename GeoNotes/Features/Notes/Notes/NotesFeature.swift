@@ -26,10 +26,10 @@ struct NotesFeature {
         case addNewNoteButtonPressed
         case addNewNoteSheet(PresentationAction<AddNewNoteFeature.Action>)
         case onDeleteNotePressed(IndexSet)
-        case onAppear
     }
     
     @Dependency(\.firebaseAuthService) var authService
+    @Dependency(\.firebaseUserService) var userService
     
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -57,15 +57,6 @@ struct NotesFeature {
                 guard let index = indexSet.first else { return .none }
                 state.notes.remove(at: index)
                 return .none
-            case .onAppear:
-//                if let user = authService.currentUser() {
-//                    print("User is already signed in: \(user.uid)")
-//                    state.showTabBar = true
-//                } else {
-//                    state.showTabBar = false
-//                }
-                return .none
-            }
         }
         .ifLet(\.$addNewNoteSheet, action: \.addNewNoteSheet) {
             AddNewNoteFeature()
