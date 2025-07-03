@@ -16,14 +16,16 @@ struct NotesFeature {
         var userName: String = "Adi"
         var notes: [NoteModel] = NoteModel.mocks
         var isLoading: Bool = false
-        var showAddNewNoteSheet: Bool = false
+        //        var showAddNewNoteSheet: Bool = false
+        @Presents var addNewNoteSheet: AddNewNoteFeature.State?
     }
     
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case logoutButtonPressed
         case logoutSucceeded
-        case showAddNewNoteButtonPressed
+        case addNewNoteButtonPressed
+        case addNewNoteSheet(PresentationAction<AddNewNoteFeature.Action>)
         case onDeleteNotePressed(IndexSet)
     }
     
@@ -38,14 +40,21 @@ struct NotesFeature {
                 return .send(.logoutSucceeded)
             case .logoutSucceeded:
                 return .none
-            case .showAddNewNoteButtonPressed:
-                state.showAddNewNoteSheet = true
+            case .addNewNoteButtonPressed:
+                state.addNewNoteSheet = AddNewNoteFeature.State()
+                return .none
+            case .addNewNoteSheet(.presented(.delegate(.save))):
+                return .none
+            case .addNewNoteSheet:
                 return .none
             case .onDeleteNotePressed(let indexSet):
                 guard let index = indexSet.first else { return .none }
                 state.notes.remove(at: index)
                 return .none
             }
+        }
+        .ifLet(\.$addNewNoteSheet, action: \.addNewNoteSheet) {
+            AddNewNoteFeature()
         }
     }
 }
@@ -70,8 +79,12 @@ struct NotesView: View {
                         }
                 }
                 .padding()
-                .sheet(isPresented: $store.showAddNewNoteSheet) {
-                    Text("Add new note")
+                .sheet(
+                    item: $store.scope(state: \.addNewNoteSheet, action: \.addNewNoteSheet)
+                ) { addNewNoteStore in
+                    NavigationStack {
+                        AddNewNoteView(store: addNewNoteStore)
+                    }
                 }
             }
         }
@@ -127,7 +140,7 @@ struct NotesView: View {
     
     private var addNewNoteButton: some View {
         Button {
-            store.send(.showAddNewNoteButtonPressed)
+            store.send(.addNewNoteButtonPressed)
         } label: {
             Image(systemName: "plus")
                 .font(.title2)

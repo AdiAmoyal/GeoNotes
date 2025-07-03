@@ -17,7 +17,6 @@ struct GeoNotesApp: App {
     static let store = Store(
         initialState: AppStateFeature.State()) {
             AppStateFeature()
-                ._printChanges()
         }
     
     var body: some Scene {

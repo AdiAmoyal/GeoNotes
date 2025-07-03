@@ -102,12 +102,7 @@ struct SignupView: View {
                     Text("Signup")
                 }
             }
-            .font(.headline)
-            .foregroundStyle(Color.text)
-            .frame(maxWidth: .infinity)
-            .frame(height: 55)
-            .background(Color.accentColor)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .callToActionButton()
         }
     }
 }
