@@ -9,22 +9,36 @@ import Foundation
 import MapKit
 
 struct NoteModel: Identifiable, Equatable {
-    let id: String = UUID().uuidString
+    let id: String
     let title: String
     let body: String
     let creationDate: Date
     let location: CLLocationCoordinate2D?
     
     init(
+        id: String = UUID().uuidString,
         title: String,
         body: String,
         creationDate: Date,
         location: CLLocationCoordinate2D?
     ) {
+        self.id = id
         self.title = title
         self.body = body
         self.creationDate = creationDate
         self.location = location
+    }
+    
+    init(note: FirebaseNote) {
+        self.id = note.id
+        self.title = note.title
+        self.body = note.body
+        self.creationDate = note.creationDate
+        if let coordinate = note.location {
+            self.location = CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        } else {
+            self.location = nil
+        }
     }
     
     static func == (lhs: NoteModel, rhs: NoteModel) -> Bool {

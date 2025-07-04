@@ -28,7 +28,7 @@ struct MapFeature {
         case binding(BindingAction<State>)
         case onAppear
         case didMapLocationChanged(NoteModel)
-//        case updateMapRegion(CLLocationCoordinate2D)
+        //        case updateMapRegion(CLLocationCoordinate2D)
         case onNextButtonPressed(NoteModel)
     }
     
@@ -81,8 +81,18 @@ struct MapView: View {
             if store.isLoading {
                 ProgressView()
             } else if !store.notes.isEmpty {
-                Map(coordinateRegion: $store.mapRegion.region)
-                    .ignoresSafeArea(edges: .top)
+                
+                Map(coordinateRegion: $store.mapRegion.region, annotationItems: store.notes) { note in
+                    MapAnnotation(coordinate: note.location ?? CLLocationCoordinate2D()) {
+                        NoteMapAnnotaionView()
+                            .scaleEffect(store.mapLocation == note ? 1 : 0.7)
+                            .shadow(radius: 10)
+                            .onTapGesture {
+                                store.send(.didMapLocationChanged(note))
+                            }
+                    }
+                }
+                .ignoresSafeArea(edges: .top)
             } else {
                 Text("No notes yet.")
                     .foregroundColor(.secondary)

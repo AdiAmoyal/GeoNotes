@@ -12,6 +12,7 @@ import ComposableArchitecture
 @DependencyClient
 struct FirebaseUserService {
     var saveUser: @Sendable (_ user: UserModel) async throws -> Void
+    var getUser: @Sendable (_ userId: String) async throws -> UserModel
 }
 
 extension FirebaseUserService: DependencyKey {
@@ -21,6 +22,12 @@ extension FirebaseUserService: DependencyKey {
                 .collection("users")
                 .document(user.userId)
                 .setData(from: user, merge: true)
+        },
+        getUser: { userId in
+            try await Firestore.firestore()
+                .collection("users")
+                .document(userId)
+                .getDocument(as: UserModel.self)
         }
     )
 }

@@ -37,18 +37,25 @@ struct NotesView: View {
                 }
             }
             .onAppear {
-                
+                store.send(.onAppear)
             }
         }
     }
     
     private var header: some View {
         HStack {
-            Text("Welcome, \(store.userName)!")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundStyle(Color.text)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            Group {
+                if let user = store.currentUser {
+                    Text("Welcome, \(user.name ?? "")!")
+                        
+                } else {
+                    Text("Welcome!")
+                }
+            }
+            .font(.title2)
+            .fontWeight(.semibold)
+            .foregroundStyle(Color.text)
+            .frame(maxWidth: .infinity, alignment: .leading)
             
             Button {
                 store.send(.logoutButtonPressed)

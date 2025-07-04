@@ -45,6 +45,8 @@ struct AddNewNoteView: View {
                 }
                 .frame(maxHeight: .infinity, alignment: .top)
                 
+                Text("\(store.location?.latitude)")
+                
                 Button {
                     store.send(.onSaveButtonPressed)
                 } label: {
