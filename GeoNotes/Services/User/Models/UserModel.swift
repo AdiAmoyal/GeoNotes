@@ -12,7 +12,6 @@ struct UserModel: Codable {
     let dateCreated: Date?
     let email: String?
     let name: String?
-//    let notes: [NoteModel]?
     
     init(
         userId: String,
@@ -25,7 +24,6 @@ struct UserModel: Codable {
         self.dateCreated = dateCreated
         self.email = email
         self.name = name
-//        self.notes = notes
     }
     
     init(auth: AuthDataResultModel) {
@@ -33,7 +31,6 @@ struct UserModel: Codable {
         self.dateCreated = auth.creationDate
         self.email = auth.email
         self.name = nil
-//        self.notes = nil
     }
     
     enum CodingKeys: String ,CodingKey {
@@ -41,7 +38,6 @@ struct UserModel: Codable {
         case dateCreated = "date_created"
         case email
         case name
-//        case notes
     }
     
     static let mock = UserModel(userId: "1", dateCreated: .now, email: "", name: "Adi", notes: [])

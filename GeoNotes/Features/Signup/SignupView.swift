@@ -46,6 +46,15 @@ struct SignupView: View {
                         .presentationDetents([.medium])
                 }
             )
+            .alert("Error", isPresented: .constant(store.errorMessage != nil), actions: {
+                Button("OK", role: .cancel) {
+                    store.send(.errorReceived(nil))
+                }
+            }, message: {
+                if let message = store.errorMessage {
+                    Text(message)
+                }
+            })
         }
     }
     

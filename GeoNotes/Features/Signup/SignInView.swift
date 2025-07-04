@@ -30,9 +30,11 @@ struct SigninFeature {
         case showPasswordButtonPressed
         case signinButtonPressed
         case signInSucceeded
+        case signInFailed(String)
         
         enum Delegate: Equatable {
             case signInSucceeded
+            case signInFailed(String)
         }
     }
     
@@ -59,6 +61,7 @@ struct SigninFeature {
                         await send(.signInSucceeded)
                     } catch {
                         print("Signin error: \(error.localizedDescription)")
+                        await send(.signInFailed("Signin error: \(error.localizedDescription)"))
                     }
                 }
             case .signInSucceeded:
@@ -66,8 +69,12 @@ struct SigninFeature {
                 return .run { send in
                     await send(.delegate(.signInSucceeded))
                 }
+            case .signInFailed(let message):
+                state.isLoading = false
+                return .run { send in
+                    await send(.delegate(.signInFailed(message)))
+                }
             }
-            
         }
     }
 }
