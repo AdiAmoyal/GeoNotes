@@ -6,44 +6,42 @@
 //
 
 import Foundation
-import MapKit
 import ComposableArchitecture
+import CoreLocation
 
 @DependencyClient
 struct LocationService {
     var authorizationStatus: @Sendable () -> CLAuthorizationStatus = { .notDetermined }
-    var requestAuthorization: @Sendable () -> Void
-    var getCurrentLocation: @Sendable () async throws -> CLLocationCoordinate2D
+    var requestAuthorization: @Sendable () -> Void = {}
+    var getLastKnownLocation: @Sendable () -> CLLocationCoordinate2D?
+    var startUpdatingLocation: @Sendable () -> Void = {}
+    var stopUpdatingLocation: @Sendable () -> Void = {}
 }
 
 extension LocationService: DependencyKey {
-    static let liveValue = Self(
-        authorizationStatus: {
-            CLLocationManager.authorizationStatus()
-        },
-        requestAuthorization: {
-            let manager = CLLocationManager()
-            manager.requestWhenInUseAuthorization()
-        },
-        getCurrentLocation: {
-            let manager = CLLocationManager()
-            let delegate = LocationDelegate()
-            manager.delegate = delegate
-            manager.desiredAccuracy = kCLLocationAccuracyBest
-            
-            return try await withCheckedThrowingContinuation { continuation in
-                delegate.onLocationReceived = { result in
-                    switch result {
-                    case .success(let coordinate):
-                        continuation.resume(returning: coordinate)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-                manager.requestLocation()
+    static let liveValue: Self = {
+        let manager = CLLocationManager()
+        let delegate = LocationServiceDelegate(manager: manager)
+        manager.delegate = delegate
+        
+        return Self(
+            authorizationStatus: {
+                manager.authorizationStatus
+            },
+            requestAuthorization: {
+                manager.requestWhenInUseAuthorization()
+            },
+            getLastKnownLocation: {
+                return delegate.lastKnownLocation
+            },
+            startUpdatingLocation: {
+                manager.startUpdatingLocation()
+            },
+            stopUpdatingLocation: {
+                manager.stopUpdatingLocation()
             }
-        }
-    )
+        )
+    }()
 }
 
 extension DependencyValues {
@@ -53,16 +51,38 @@ extension DependencyValues {
     }
 }
 
-final class LocationDelegate: NSObject, CLLocationManagerDelegate {
-    var onLocationReceived: ((Result<CLLocationCoordinate2D, Error>) -> Void)?
+final class LocationServiceDelegate: NSObject, CLLocationManagerDelegate {
+    var lastKnownLocation: CLLocationCoordinate2D?
+    private let manager: CLLocationManager
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let coordinate = locations.first?.coordinate {
-            onLocationReceived?(.success(coordinate))
+    init(manager: CLLocationManager) {
+        self.manager = manager
+        super.init()
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization()
+        case .restricted:
+            print("Location restricted")
+        case .denied:
+            print("Location denied")
+        case .authorizedAlways:
+            print("Location authorizedAlways")
+        case .authorizedWhenInUse:
+            print("Location authorized when in use")
+            lastKnownLocation = manager.location?.coordinate
+        @unknown default:
+            print("Location service disabled")
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        onLocationReceived?(.failure(error))
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        lastKnownLocation = locations.first?.coordinate
+        //        if let location = locations.first?.coordinate {
+        //            lastKnownLocation = location
+        //            NotificationCenter.default.post(name: .locationUpdated, object: location)
+        //        }
     }
 }

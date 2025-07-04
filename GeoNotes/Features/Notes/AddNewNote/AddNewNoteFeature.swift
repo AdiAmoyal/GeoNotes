@@ -45,48 +45,18 @@ struct AddNewNoteFeature {
             case .delegate:
                 return .none
             case .onAppear:
-//                let status = locationService.authorizationStatus()
-//                
-//                if status == .notDetermined {
-//                    locationService.requestAuthorization()
-//                    Task {
-//                        try? await Task.sleep(for: .seconds(1))
-//                    }
-//                }
-//                
-//                let updateStatus = locationService.authorizationStatus()
-//                guard updateStatus == .authorizedWhenInUse || updateStatus == .authorizedAlways else {
-//                    return .send(.locationFailed("Location access denied."))
-//                }
+                locationService.startUpdatingLocation()
+                let status = locationService.authorizationStatus()
                 
-                return .run { send in
-                    var status = locationService.authorizationStatus()
-                    
-                    if status == .notDetermined {
-                        locationService.requestAuthorization()
-                        Task {
-                            try? await Task.sleep(for: .seconds(1))
-                            status = locationService.authorizationStatus()
-                        }
-                    }
-                    
-//                    let updateStatus = locationService.authorizationStatus()
-                    guard status == .authorizedWhenInUse || status == .authorizedAlways else {
-                        await send(.locationFailed("Location access denied."))
-                        return
-                    }
-                    do {
-                        print("111111")
-                        let location = try await locationService.getCurrentLocation()
-                        print("22222")
-                        await send(.locationReceived(location))
-                    } catch {
-                        await send(.locationFailed("Failed to get location."))
-                    }
+                if status == .notDetermined {
+                    locationService.requestAuthorization()
                 }
+                
+                if let location = locationService.getLastKnownLocation() {
+                    return .send(.locationReceived(location))
+                }
+                return .none
             case .locationReceived(let coordinate):
-                print("333333")
-                print("\(coordinate.longitude)")
                 state.location = coordinate
                 return .none
             case .locationFailed(let error):

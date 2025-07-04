@@ -47,7 +47,6 @@ struct NotesFeature {
                     if let user = authService.currentUser() {
                         do {
                             let currentUser = try await userService.getUser(user.uid)
-                            print("2222")
                             let firebaseNotes = try await noteService.fetchNotes(currentUser.userId)
                             let notes = firebaseNotes.map { NoteModel(note: $0) }
                             await send(.userLoaded(currentUser))
