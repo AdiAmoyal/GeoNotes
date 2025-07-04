@@ -83,12 +83,16 @@ struct NotesFeature {
                 return .none
             case .onDeleteNotePressed(let indexSet):
                 guard let index = indexSet.first else { return .none }
+                
+                let noteToDelete = state.notes[index]
                 state.notes.remove(at: index)
-                return .run { [currentUser = state.currentUser, notes = state.notes] send in
+                
+                return .run { [currentUser = state.currentUser, noteToDelete = noteToDelete] send in
                     if let user = currentUser,
                        let index = indexSet.first {
                         do {
-                            try await noteService.deleteNote(user.userId, notes[index].id)
+                            print("\(noteToDelete.id)")
+                            try await noteService.deleteNote(user.userId, noteToDelete.id)
                         } catch {
                             print("Failed to delete note: \(error)")
                         }

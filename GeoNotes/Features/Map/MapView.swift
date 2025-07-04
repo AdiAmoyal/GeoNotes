@@ -28,9 +28,13 @@ struct MapFeature {
         case binding(BindingAction<State>)
         case onAppear
         case didMapLocationChanged(NoteModel)
-        //        case updateMapRegion(CLLocationCoordinate2D)
         case onNextButtonPressed(NoteModel)
+        case notesLoaded([NoteModel])
     }
+    
+    @Dependency(\.firebaseAuthService) var authService
+    @Dependency(\.firebaseUserService) var userService
+    @Dependency(\.firebaseNotesService) var noteService
     
     var body: some ReducerOf<Self> {
         BindingReducer()
@@ -40,11 +44,23 @@ struct MapFeature {
                 return .none
             case .onAppear:
                 state.isLoading = true
-                state.notes = NoteModel.mocks
-                state.mapLocation = state.notes.first!
-                state.isLoading = false
-                guard let note = state.mapLocation else { return .none }
-                return .send(.didMapLocationChanged(note))
+                //                state.notes = NoteModel.mocks
+                //                state.mapLocation = state.notes.first!
+                //                state.isLoading = false
+                //                guard let note = state.mapLocation else { return .none }
+                //                return .send(.didMapLocationChanged(note))
+                return .run { send in
+                    if let user = authService.currentUser() {
+                        do {
+                            let currentUser = try await userService.getUser(user.uid)
+                            let firebaseNotes = try await noteService.fetchNotes(currentUser.userId)
+                            let notes = firebaseNotes.map { NoteModel(note: $0) }
+                            await send(.notesLoaded(notes))
+                        } catch {
+                            print("Failed to get notes: \(error)")
+                        }
+                    }
+                }
             case .didMapLocationChanged(let note):
                 state.mapLocation = note
                 guard let note = state.mapLocation, let coordinates = note.location else { return .none }
@@ -65,6 +81,14 @@ struct MapFeature {
                 // Next index is valid
                 let nextNote = state.notes[nextIndex]
                 return .send(.didMapLocationChanged(nextNote))
+            case .notesLoaded(let notes):
+                state.notes = notes
+                state.isLoading = false
+                return .run { send in
+                    if let note = notes.first {
+                        await send(.didMapLocationChanged(note))
+                    }
+                }
             }
         }
     }

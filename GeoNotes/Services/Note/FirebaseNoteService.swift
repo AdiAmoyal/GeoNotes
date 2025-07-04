@@ -34,7 +34,7 @@ extension FirebaseNotesService: DependencyKey {
                 return []
             }
         },
-
+        
         addNote: { userId, note in
             let firebaseNote = FirebaseNote(note: note)
             _ = try Firestore.firestore()
@@ -42,12 +42,23 @@ extension FirebaseNotesService: DependencyKey {
                 .collection("notes")
                 .addDocument(from: firebaseNote)
         },
-
+        
         deleteNote: { userId, noteId in
-            try await Firestore.firestore()
-                .collection("users").document(userId)
-                .collection("notes").document(noteId)
-                .delete()
+            do {
+                let querySnapshot = try await Firestore.firestore()
+                    .collection("users").document(userId)
+                    .collection("notes")
+                    .whereField("id", isEqualTo: noteId)
+                    .getDocuments()
+                
+                for document in querySnapshot.documents {
+                    try await document.reference.delete()
+                    print("Deleted note with internalId: \(noteId)")
+                }
+            } catch {
+                print("Error delete note: \(error)")
+            }
+            
         }
     )
 }

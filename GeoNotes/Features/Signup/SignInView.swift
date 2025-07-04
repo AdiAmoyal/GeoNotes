@@ -19,14 +19,29 @@ struct SignInView: View {
         ZStack {
             Color.background.ignoresSafeArea()
             
-            VStack {
+            VStack(spacing: 32) {
+                titleSection
                 formSection
+                    .padding(.top, 8)
                 Spacer()
                 signInButton
             }
             .padding(24)
         }
         
+    }
+    
+    private var titleSection: some View {
+        VStack {
+            Text("Good to see you again")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .foregroundStyle(Color.text)
+            
+            Text("Your notes missed you")
+                .font(.headline)
+                .foregroundStyle(Color.secondary)
+        }
     }
     
     private var formSection: some View  {
